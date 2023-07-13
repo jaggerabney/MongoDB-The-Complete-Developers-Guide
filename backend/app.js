@@ -2,7 +2,6 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
 const productRoutes = require("./routes/products");
@@ -26,7 +25,5 @@ app.use((req, res, next) => {
 
 app.use("/products", productRoutes);
 app.use("/", authRoutes);
-
-const db = new MongoClient(process.env.DB_CONNECTION_STRING);
 
 app.listen(3100);
