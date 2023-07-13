@@ -56,19 +56,35 @@ const products = [
 ];
 
 // Get list of products products
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
   // Return a list of dummy products
   // Later, this data will be fetched from MongoDB
-  const queryPage = req.query.page;
-  const pageSize = 5;
-  let resultProducts = [...products];
-  if (queryPage) {
-    resultProducts = products.slice(
-      (queryPage - 1) * pageSize,
-      queryPage * pageSize
-    );
+  // const queryPage = req.query.page;
+  // const pageSize = 5;
+  // let resultProducts = [...products];
+
+  // if (queryPage) {
+  //   resultProducts = products.slice(
+  //     (queryPage - 1) * pageSize,
+  //     queryPage * pageSize
+  //   );
+  // }
+
+  const products = [];
+
+  try {
+    const allProducts = await db.collection("products").find();
+
+    for await (const product of allProducts) {
+      product.price = product.price.toString();
+
+      products.push(product);
+    }
+  } catch (err) {
+    console.log(err);
   }
-  res.json(resultProducts);
+
+  res.status(200).json({ products });
 });
 
 // Get single product
@@ -89,7 +105,7 @@ router.post("", async (req, res, next) => {
   let result;
 
   try {
-    result = await db.collection("products").insertOne({ product: newProduct });
+    result = await db.collection("products").insertOne({ ...newProduct });
   } catch (err) {
     console.log(err);
   }
