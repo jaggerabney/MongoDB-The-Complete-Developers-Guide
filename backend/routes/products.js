@@ -1,5 +1,5 @@
 const Router = require("express").Router;
-const { Decimal128 } = require("mongodb");
+const { Decimal128, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 const { getDb } = require("../db");
@@ -30,9 +30,21 @@ router.get("/", async (req, res, next) => {
 });
 
 // Get single product
-router.get("/:id", (req, res, next) => {
-  const product = products.find((p) => p._id === req.params.id);
-  res.json(product);
+router.get("/:id", async (req, res, next) => {
+  const productId = req.params.id;
+  let product;
+
+  try {
+    product = await db
+      .collection("products")
+      .findOne({ _id: new ObjectId(productId) });
+
+    product.price = product.price.toString();
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.status(200).json(product);
 });
 
 // Add new product
