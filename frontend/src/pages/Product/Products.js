@@ -10,8 +10,6 @@ class ProductsPage extends Component {
     axios
       .get("http://localhost:3100/products")
       .then((productsResponse) => {
-        console.log(productsResponse);
-
         this.setState({
           isLoading: false,
           products: productsResponse.data.products,
@@ -41,8 +39,6 @@ class ProductsPage extends Component {
 
   render() {
     let content = <p>Loading products...</p>;
-
-    console.log(!this.state.isLoading, this.state.products.length > 0);
 
     if (!this.state.isLoading && this.state.products.length > 0) {
       content = (
