@@ -44,17 +44,19 @@ router.get("/:id", async (req, res, next) => {
     console.log(err);
   }
 
-  res.status(200).json(product);
+  res.status(200).json({ product });
 });
 
 // Add new product
 // Requires logged in user
 router.post("", async (req, res, next) => {
+  const { name, description, price, image } = req.body;
+
   const newProduct = {
-    name: req.body.name,
-    description: req.body.description,
-    price: Decimal128.fromString(req.body.price.toString()), // store this as 128bit decimal in MongoDB
-    image: req.body.image,
+    name,
+    description,
+    price: Decimal128.fromString(price.toString()), // store this as 128bit decimal in MongoDB
+    image,
   };
   let result;
 
@@ -66,26 +68,45 @@ router.post("", async (req, res, next) => {
 
   res
     .status(201)
-    .json({ message: "Product added", productId: result.insertedId });
+    .json({ message: "Product added!", productId: result.insertedId });
 });
 
 // Edit existing product
 // Requires logged in user
-router.patch("/:id", (req, res, next) => {
+router.patch("/:id", async (req, res, next) => {
+  const { name, description, price, image } = req.body;
+  const productId = req.params.id;
+
   const updatedProduct = {
-    name: req.body.name,
-    description: req.body.description,
-    price: parseFloat(req.body.price), // store this as 128bit decimal in MongoDB
-    image: req.body.image,
+    name,
+    description,
+    price: parseFloat(price), // store this as 128bit decimal in MongoDB
+    image,
   };
-  console.log(updatedProduct);
-  res.status(200).json({ message: "Product updated", productId: "DUMMY" });
+
+  try {
+    await db
+      .collection("products")
+      .updateOne({ _id: new ObjectId(productId) }, { $set: updatedProduct });
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.status(200).json({ message: "Product updated!", productId });
 });
 
 // Delete a product
 // Requires logged in user
-router.delete("/:id", (req, res, next) => {
-  res.status(200).json({ message: "Product deleted" });
+router.delete("/:id", async (req, res, next) => {
+  const productId = req.params.id;
+
+  try {
+    await db.deleteOne({ _id: new ObjectId(productId) });
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.status(200).json({ message: "Product deleted!" });
 });
 
 module.exports = router;
