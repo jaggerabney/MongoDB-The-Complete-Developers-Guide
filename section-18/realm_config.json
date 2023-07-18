@@ -1,0 +1,9 @@
+{
+    "app_id": "mongodb-the-complete-guide-app-hbxcu",
+    "config_version": 20210101,
+    "name": "MongoDB-The-Complete-Guide-App",
+    "location": "US-VA",
+    "provider_region": "aws-us-east-1",
+    "deployment_model": "LOCAL",
+    "environment": "production"
+}
