@@ -12,10 +12,15 @@ getDb((error, database) => (db = database));
 // Get list of products
 router.get("/", async (req, res, next) => {
   // Return a list of all products
+  const queryPage = req.query.page;
+  const pageSize = 3;
   const products = [];
 
   try {
     const allProducts = db.collection("products").find();
+    // .sort({ price: -1 })
+    // .skip((queryPage - 1) * pageSize)
+    // .limit(pageSize);
 
     for await (const product of allProducts) {
       product.price = product.price.toString();
@@ -101,7 +106,7 @@ router.delete("/:id", async (req, res, next) => {
   const productId = req.params.id;
 
   try {
-    await db.deleteOne({ _id: new ObjectId(productId) });
+    await db.collection("products").deleteOne({ _id: new ObjectId(productId) });
   } catch (err) {
     console.log(err);
   }

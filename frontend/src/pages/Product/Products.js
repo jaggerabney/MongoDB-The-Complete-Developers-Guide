@@ -6,7 +6,7 @@ import Products from "../../components/Products/Products";
 class ProductsPage extends Component {
   state = { isLoading: true, products: [] };
 
-  componentDidMount() {
+  fetchData() {
     axios
       .get("http://localhost:3100/products")
       .then((productsResponse) => {
@@ -23,10 +23,16 @@ class ProductsPage extends Component {
       });
   }
 
+  componentDidMount() {
+    this.fetchData();
+  }
+
   productDeleteHandler = (productId) => {
     axios
       .delete("http://localhost:3100/products/" + productId)
       .then((result) => {
+        this.fetchData();
+
         console.log(result);
       })
       .catch((err) => {
